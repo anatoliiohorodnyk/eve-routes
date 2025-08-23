@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EVE Routes - Trading Tool</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="/static/style.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-rocket"></i>
+                    <h1>EVE Routes</h1>
+                </div>
+                <div class="subtitle">Find the most profitable trade routes in New Eden</div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Trade Route Form -->
+            <section class="form-section">
+                <div class="form-container">
+                    <h2><i class="fas fa-route"></i> Configure Trade Route</h2>
+                    
+                    <form id="tradeForm" class="trade-form">
+                        <!-- Route Selection -->
+                        <div class="form-group">
+                            <label for="route">Trade Route:</label>
+                            <select id="route" name="route" required>
+                                <option value="">Select route...</option>
+                                <option value="jita-dodixie">Jita → Dodixie</option>
+                                <option value="dodixie-jita">Dodixie → Jita</option>
+                            </select>
+                        </div>
+
+                        <!-- Cargo Capacity -->
+                        <div class="form-group">
+                            <label for="cargoCapacity">Cargo Capacity (m³):</label>
+                            <div class="input-with-display">
+                                <input type="range" id="cargoCapacity" name="cargoCapacity" 
+                                       min="1000" max="100000" value="33500" step="500">
+                                <span class="value-display" id="cargoDisplay">33,500 m³</span>
+                            </div>
+                            <div class="presets">
+                                <button type="button" class="preset-btn" data-cargo="8000">Tayra (~8k)</button>
+                                <button type="button" class="preset-btn" data-cargo="33500">Bestower (~34k)</button>
+                                <button type="button" class="preset-btn" data-cargo="62500">Freighter (~62k)</button>
+                            </div>
+                        </div>
+
+                        <!-- Minimum Profit -->
+                        <div class="form-group">
+                            <label for="minProfit">Minimum Profit (ISK):</label>
+                            <div class="input-with-display">
+                                <input type="range" id="minProfit" name="minProfit" 
+                                       min="0" max="10000000" value="100000" step="50000">
+                                <span class="value-display" id="profitDisplay">100,000 ISK</span>
+                            </div>
+                            <div class="presets">
+                                <button type="button" class="preset-btn" data-profit="50000">50k</button>
+                                <button type="button" class="preset-btn" data-profit="100000">100k</button>
+                                <button type="button" class="preset-btn" data-profit="500000">500k</button>
+                                <button type="button" class="preset-btn" data-profit="1000000">1M</button>
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button type="submit" id="searchBtn" class="search-btn">
+                            <i class="fas fa-search"></i>
+                            <span>Find Trade Opportunities</span>
+                        </button>
+                    </form>
+                </div>
+            </section>
+
+            <!-- Loading Section -->
+            <section id="loadingSection" class="loading-section hidden">
+                <div class="loading-container">
+                    <div class="spinner"></div>
+                    <h3>Analyzing Market Data...</h3>
+                    <p id="loadingText">Fetching market orders from EVE ESI API...</p>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Results Section -->
+            <section id="resultsSection" class="results-section hidden">
+                <div class="results-header">
+                    <h2><i class="fas fa-chart-line"></i> Trade Opportunities</h2>
+                    <div class="results-meta" id="resultsMeta"></div>
+                </div>
+
+                <div class="results-summary" id="resultsSummary"></div>
+
+                <div class="results-table-container">
+                    <table class="results-table" id="resultsTable">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Item Name</th>
+                                <th>Buy Price</th>
+                                <th>Sell Price</th>
+                                <th>Profit/Unit</th>
+                                <th>Margin</th>
+                                <th>Units</th>
+                                <th>Total Weight</th>
+                                <th>Total Profit</th>
+                                <th>Investment</th>
+                            </tr>
+                        </thead>
+                        <tbody id="resultsBody">
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Error Section -->
+            <section id="errorSection" class="error-section hidden">
+                <div class="error-container">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <h3>Error</h3>
+                    <p id="errorMessage"></p>
+                    <button id="retryBtn" class="retry-btn">Try Again</button>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-content">
+                <div class="footer-links">
+                    <a href="https://github.com/yourusername/eve-routes" target="_blank">
+                        <i class="fab fa-github"></i> GitHub
+                    </a>
+                    <a href="https://esi.evetech.net/" target="_blank">
+                        <i class="fas fa-api"></i> EVE ESI API
+                    </a>
+                    <a href="https://www.eveonline.com/" target="_blank">
+                        <i class="fas fa-rocket"></i> EVE Online
+                    </a>
+                </div>
+                <div class="disclaimer">
+                    <p>Not affiliated with CCP Games. Use at your own risk. Always verify prices in-game.</p>
+                    <p>Fly safe, trade smart! o7</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="/static/script.js"></script>
+</body>
+</html>
