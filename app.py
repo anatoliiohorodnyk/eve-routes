@@ -45,8 +45,8 @@ except Exception as e:
 
 # Initialize rate limiter
 limiter = Limiter(
-    app,
     key_func=get_remote_address,
+    app=app,
     default_limits=[f"{app.config['RATE_LIMIT_PER_MINUTE']} per minute"]
 )
 
