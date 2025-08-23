@@ -29,13 +29,30 @@
                     
                     <form id="tradeForm" class="trade-form">
                         <!-- Route Selection -->
-                        <div class="form-group">
-                            <label for="route">Trade Route:</label>
-                            <select id="route" name="route" required>
-                                <option value="">Select route...</option>
-                                <option value="jita-dodixie">Jita → Dodixie</option>
-                                <option value="dodixie-jita">Dodixie → Jita</option>
-                            </select>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="fromStation">Going From:</label>
+                                <select id="fromStation" name="fromStation" required>
+                                    <option value="">Select departure...</option>
+                                    <option value="jita">Jita IV - Moon 4 - Caldari Navy Assembly Plant</option>
+                                    <option value="dodixie">Dodixie IX - Moon 20 - Federation Navy Assembly Plant</option>
+                                    <option value="amarr">Amarr VIII (Oris) - Emperor Family Academy</option>
+                                    <option value="rens">Rens VI - Moon 8 - Brutor Tribe Treasury</option>
+                                    <option value="hek">Hek VIII - Moon 12 - Boundless Creation Factory</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="toStation">Going To:</label>
+                                <select id="toStation" name="toStation" required>
+                                    <option value="">Select destination...</option>
+                                    <option value="jita">Jita IV - Moon 4 - Caldari Navy Assembly Plant</option>
+                                    <option value="dodixie">Dodixie IX - Moon 20 - Federation Navy Assembly Plant</option>
+                                    <option value="amarr">Amarr VIII (Oris) - Emperor Family Academy</option>
+                                    <option value="rens">Rens VI - Moon 8 - Brutor Tribe Treasury</option>
+                                    <option value="hek">Hek VIII - Moon 12 - Boundless Creation Factory</option>
+                                </select>
+                            </div>
                         </div>
 
                         <!-- Cargo Capacity -->

@@ -37,16 +37,22 @@ class EVETradeAPI:
             'Accept': 'application/json'
         })
         
-        # Region IDs
+        # Region IDs  
         self.regions = {
             'jita': 10000002,      # The Forge (Jita)
-            'dodixie': 10000032    # Sinq Laison (Dodixie)
+            'dodixie': 10000032,   # Sinq Laison (Dodixie)
+            'amarr': 10000043,     # Domain (Amarr)
+            'rens': 10000030,      # Heimatar (Rens)
+            'hek': 10000042        # Metropolis (Hek)
         }
-        
+
         # Station IDs
         self.stations = {
             'jita': 60003760,      # Jita IV - Moon 4 - Caldari Navy Assembly Plant
-            'dodixie': 60011866    # Dodixie IX - Moon 20 - Federation Navy Assembly Plant
+            'dodixie': 60011866,   # Dodixie IX - Moon 20 - Federation Navy Assembly Plant
+            'amarr': 60008494,     # Amarr VIII (Oris) - Emperor Family Academy
+            'rens': 60004588,      # Rens VI - Moon 8 - Brutor Tribe Treasury
+            'hek': 60005686       # Hek VIII - Moon 12 - Boundless Creation Factory
         }
         
         self.type_names = {}  # Cache for item names

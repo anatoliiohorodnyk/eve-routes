@@ -124,7 +124,7 @@ def get_opportunities():
         min_profit = int(request.args.get('min_profit', 100000))
         
         # Validate parameters
-        valid_stations = ['jita', 'dodixie']
+        valid_stations = ['jita', 'dodixie', 'amarr', 'rens', 'hek']
         if from_station not in valid_stations or to_station not in valid_stations:
             return jsonify({
                 'error': 'Invalid station. Use jita or dodixie'

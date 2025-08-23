@@ -107,6 +107,13 @@ body {
     gap: 1.5rem;
 }
 
+/* Form Layout */
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
 .form-group {
     display: flex;
     flex-direction: column;

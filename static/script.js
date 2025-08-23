@@ -109,18 +109,26 @@ class EVERoutesApp {
 
         // Get form data
         const formData = new FormData(document.getElementById('tradeForm'));
-        const route = formData.get('route');
+        const fromStation = formData.get('fromStation');
+        const toStation = formData.get('toStation');
         const cargoCapacity = formData.get('cargoCapacity');
         const minProfit = formData.get('minProfit');
 
         // Validate
-        if (!route) {
-            this.showError('Please select a trade route');
+        if (!fromStation) {
+            this.showError('Please select departure station');
             return;
         }
 
-        // Parse route
-        const [fromStation, toStation] = route.split('-');
+        if (!toStation) {
+            this.showError('Please select destination station');
+            return;
+        }
+
+        if (fromStation === toStation) {
+            this.showError('Departure and destination stations cannot be the same');
+            return;
+        }
 
         // Show loading
         this.showLoading();
