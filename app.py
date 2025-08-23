@@ -47,7 +47,8 @@ except Exception as e:
 limiter = Limiter(
     key_func=get_remote_address,
     app=app,
-    default_limits=[f"{app.config['RATE_LIMIT_PER_MINUTE']} per minute"]
+    default_limits=[f"{app.config['RATE_LIMIT_PER_MINUTE']} per minute"],
+    storage_uri=app.config['REDIS_URL']
 )
 
 # Initialize EVE API
