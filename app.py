@@ -20,7 +20,6 @@ logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler('logs/app.log'),
         logging.StreamHandler()
     ]
 )
@@ -291,9 +290,6 @@ def internal_error(e):
     return jsonify({'error': 'Internal server error'}), 500
 
 if __name__ == '__main__':
-    # Create logs directory
-    os.makedirs('logs', exist_ok=True)
-    
     # Run the app
     debug_mode = os.getenv('FLASK_ENV') == 'development'
     app.run(
