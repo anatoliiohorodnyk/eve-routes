@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 EVE Online API Integration
-Adapted for web application with caching and error handling
+Updated with sales tax calculations and all major trade hubs
 """
 
 import requests
@@ -20,6 +20,7 @@ class TradeOpportunity:
     item_name: str
     buy_price: float
     sell_price: float
+    actual_sell_price: float  # After sales tax
     profit_per_unit: float
     profit_margin: float
     volume: float
@@ -27,6 +28,7 @@ class TradeOpportunity:
     max_units_by_orders: int
     total_profit_potential: float
     isk_investment: float
+    sales_tax_amount: float  # Total sales tax paid
 
 class EVETradeAPI:
     def __init__(self):
@@ -37,7 +39,7 @@ class EVETradeAPI:
             'Accept': 'application/json'
         })
         
-        # Region IDs  
+        # Region IDs for all major trade hubs
         self.regions = {
             'jita': 10000002,      # The Forge (Jita)
             'dodixie': 10000032,   # Sinq Laison (Dodixie)
@@ -45,8 +47,8 @@ class EVETradeAPI:
             'rens': 10000030,      # Heimatar (Rens)
             'hek': 10000042        # Metropolis (Hek)
         }
-
-        # Station IDs
+        
+        # Station IDs for all major trade hubs
         self.stations = {
             'jita': 60003760,      # Jita IV - Moon 4 - Caldari Navy Assembly Plant
             'dodixie': 60011866,   # Dodixie IX - Moon 20 - Federation Navy Assembly Plant
@@ -179,11 +181,18 @@ class EVETradeAPI:
         return types_info
 
     def find_trade_opportunities(self, from_station: str, to_station: str, 
-                               max_cargo: float = 33500, min_profit: float = 100000) -> List[TradeOpportunity]:
-        """Find trade opportunities between two stations"""
+                               max_cargo: float = 33500, min_profit: float = 100000, 
+                               sales_tax: float = 7.5) -> List[TradeOpportunity]:
+        """Find trade opportunities between two stations with sales tax calculations"""
         
         logger.info(f"Starting trade analysis: {from_station.upper()} → {to_station.upper()}")
-        logger.info(f"Parameters: cargo={max_cargo:,.0f}m³, min_profit={min_profit:,.0f} ISK")
+        logger.info(f"Parameters: cargo={max_cargo:,.0f}m³, min_profit={min_profit:,.0f} ISK, sales_tax={sales_tax:.2f}%")
+        
+        # Validate station names
+        if from_station.lower() not in self.regions:
+            raise ValueError(f"Unknown station: {from_station}")
+        if to_station.lower() not in self.stations:
+            raise ValueError(f"Unknown station: {to_station}")
         
         # Get region and station IDs
         from_region = self.regions[from_station.lower()]
@@ -223,8 +232,9 @@ class EVETradeAPI:
         common_items = list(set(sell_orders.keys()) & set(buy_orders.keys()))
         logger.info(f"Found {len(common_items)} common items between stations")
         
-        # Pre-filter profitable items
+        # Pre-filter profitable items with sales tax consideration
         potentially_profitable = []
+        sales_tax_multiplier = 1 - (sales_tax / 100)
         
         for type_id in common_items:
             try:
@@ -234,15 +244,17 @@ class EVETradeAPI:
                 
                 buy_price = best_sell['price']
                 sell_price = best_buy['price']
+                actual_sell_price = sell_price * sales_tax_multiplier  # After sales tax
                 
-                if sell_price > buy_price:
-                    profit_per_unit = sell_price - buy_price
+                if actual_sell_price > buy_price:
+                    profit_per_unit = actual_sell_price - buy_price
                     # Only keep items with decent profit per unit
                     if profit_per_unit >= 10000:  # 10k ISK minimum
                         potentially_profitable.append({
                             'type_id': type_id,
                             'buy_price': buy_price,
                             'sell_price': sell_price,
+                            'actual_sell_price': actual_sell_price,
                             'profit_per_unit': profit_per_unit,
                             'best_sell_volume': best_sell['volume_remain'],
                             'best_buy_volume': best_buy['volume_remain']
@@ -251,7 +263,7 @@ class EVETradeAPI:
                 logger.error(f"Error processing type_id {type_id}: {e}")
                 continue
         
-        logger.info(f"Found {len(potentially_profitable)} potentially profitable items")
+        logger.info(f"Found {len(potentially_profitable)} potentially profitable items (after sales tax)")
         
         # Get detailed type information
         type_ids = [item['type_id'] for item in potentially_profitable]
@@ -287,6 +299,10 @@ class EVETradeAPI:
             total_profit = profit_per_unit * max_units
             isk_investment = item['buy_price'] * max_units
             
+            # Calculate total sales tax paid
+            sales_tax_per_unit = item['sell_price'] - item['actual_sell_price']
+            total_sales_tax = sales_tax_per_unit * max_units
+            
             if total_profit >= min_profit:
                 item_name = type_info.get('name', f'Unknown_{type_id}')
                 
@@ -295,13 +311,15 @@ class EVETradeAPI:
                     item_name=item_name,
                     buy_price=item['buy_price'],
                     sell_price=item['sell_price'],
+                    actual_sell_price=item['actual_sell_price'],
                     profit_per_unit=profit_per_unit,
                     profit_margin=profit_margin,
                     volume=volume,
                     max_units_by_cargo=max_units_by_cargo,
                     max_units_by_orders=max_units_by_orders,
                     total_profit_potential=total_profit,
-                    isk_investment=isk_investment
+                    isk_investment=isk_investment,
+                    sales_tax_amount=total_sales_tax
                 )
                 
                 opportunities.append(opportunity)

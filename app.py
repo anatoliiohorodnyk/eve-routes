@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 EVE Routes - Flask Web Application
-Main application file
+Main application file with sales tax support
 """
 
 import os
@@ -48,15 +48,15 @@ limiter = Limiter(
     key_func=get_remote_address,
     app=app,
     default_limits=[f"{app.config['RATE_LIMIT_PER_MINUTE']} per minute"],
-    storage_uri=app.config['REDIS_URL']
+    storage_uri=app.config['REDIS_URL'] if redis_client else None
 )
 
 # Initialize EVE API
 eve_api = EVETradeAPI()
 
-def get_cache_key(from_station: str, to_station: str, max_cargo: int, min_profit: int) -> str:
+def get_cache_key(from_station: str, to_station: str, max_cargo: int, min_profit: int, sales_tax: float) -> str:
     """Generate cache key for request parameters"""
-    return f"opportunities:{from_station}:{to_station}:{max_cargo}:{min_profit}"
+    return f"opportunities:{from_station}:{to_station}:{max_cargo}:{min_profit}:{sales_tax}"
 
 def get_cached_data(cache_key: str):
     """Get cached data from Redis"""
@@ -123,12 +123,13 @@ def get_opportunities():
         to_station = request.args.get('to_station', '').lower()
         max_cargo = int(request.args.get('max_cargo', 33500))
         min_profit = int(request.args.get('min_profit', 100000))
+        sales_tax = float(request.args.get('sales_tax', 7.5))
         
         # Validate parameters
         valid_stations = ['jita', 'dodixie', 'amarr', 'rens', 'hek']
         if from_station not in valid_stations or to_station not in valid_stations:
             return jsonify({
-                'error': 'Invalid station. Use jita or dodixie'
+                'error': f'Invalid station. Use one of: {", ".join(valid_stations)}'
             }), 400
         
         if from_station == to_station:
@@ -146,8 +147,13 @@ def get_opportunities():
                 'error': 'Minimum profit cannot be negative'
             }), 400
         
+        if sales_tax < 3.37 or sales_tax > 7.5:
+            return jsonify({
+                'error': 'Invalid sales tax rate. Must be between 3.37% and 7.5%'
+            }), 400
+        
         # Check cache first
-        cache_key = get_cache_key(from_station, to_station, max_cargo, min_profit)
+        cache_key = get_cache_key(from_station, to_station, max_cargo, min_profit, sales_tax)
         cached_result = get_cached_data(cache_key)
         
         if cached_result:
@@ -163,13 +169,14 @@ def get_opportunities():
         
         # Get fresh data
         start_time = datetime.utcnow()
-        logger.info(f"Fetching opportunities: {from_station}→{to_station}, cargo={max_cargo}, profit={min_profit}")
+        logger.info(f"Fetching opportunities: {from_station}→{to_station}, cargo={max_cargo}, profit={min_profit}, tax={sales_tax}%")
         
         opportunities = eve_api.find_trade_opportunities(
             from_station=from_station,
             to_station=to_station,
             max_cargo=max_cargo,
-            min_profit=min_profit
+            min_profit=min_profit,
+            sales_tax=sales_tax
         )
         
         end_time = datetime.utcnow()
@@ -184,13 +191,15 @@ def get_opportunities():
                 'item_name': opp.item_name,
                 'buy_price': opp.buy_price,
                 'sell_price': opp.sell_price,
+                'actual_sell_price': opp.actual_sell_price,
                 'profit_per_unit': opp.profit_per_unit,
                 'profit_margin': opp.profit_margin,
                 'volume': opp.volume,
                 'max_units': max_units,
                 'total_weight': max_units * opp.volume,
                 'total_profit': opp.total_profit_potential,
-                'investment': opp.isk_investment
+                'investment': opp.isk_investment,
+                'sales_tax_paid': opp.sales_tax_amount
             })
         
         # Prepare response
@@ -201,6 +210,7 @@ def get_opportunities():
                 'to_station': to_station,
                 'max_cargo': max_cargo,
                 'min_profit': min_profit,
+                'sales_tax': sales_tax,
                 'total_found': len(opportunities),
                 'showing': len(opportunities_data),
                 'query_time_seconds': round(duration, 2),

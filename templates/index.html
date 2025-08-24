@@ -86,6 +86,21 @@
                             </div>
                         </div>
 
+                        <!-- Sales Tax Rate -->
+                        <div class="form-group">
+                            <label for="salesTax">Sales Tax Rate (%):</label>
+                            <div class="input-with-display">
+                                <input type="range" id="salesTax" name="salesTax" 
+                                       min="3.37" max="7.5" value="7.5" step="0.1">
+                                <span class="value-display" id="taxDisplay">7.5%</span>
+                            </div>
+                            <div class="presets">
+                                <button type="button" class="preset-btn" data-tax="7.5">No Skill (7.5%)</button>
+                                <button type="button" class="preset-btn" data-tax="5.0">Accounting III (5.0%)</button>
+                                <button type="button" class="preset-btn" data-tax="3.37">Accounting V (3.37%)</button>
+                            </div>
+                        </div>
+
                         <!-- Submit Button -->
                         <button type="submit" id="searchBtn" class="search-btn">
                             <i class="fas fa-search"></i>

@@ -21,6 +21,7 @@ class EVERoutesApp {
         // Range input updates
         const cargoSlider = document.getElementById('cargoCapacity');
         const profitSlider = document.getElementById('minProfit');
+        const taxSlider = document.getElementById('salesTax');
 
         cargoSlider.addEventListener('input', (e) => {
             this.updateCargoDisplay(e.target.value);
@@ -28,6 +29,10 @@ class EVERoutesApp {
 
         profitSlider.addEventListener('input', (e) => {
             this.updateProfitDisplay(e.target.value);
+        });
+
+        taxSlider.addEventListener('input', (e) => {
+            this.updateTaxDisplay(e.target.value);
         });
 
         // Preset buttons
@@ -44,6 +49,14 @@ class EVERoutesApp {
                 const profit = e.target.dataset.profit;
                 profitSlider.value = profit;
                 this.updateProfitDisplay(profit);
+            });
+        });
+
+        document.querySelectorAll('.preset-btn[data-tax]').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const tax = e.target.dataset.tax;
+                taxSlider.value = tax;
+                this.updateTaxDisplay(tax);
             });
         });
 
@@ -65,9 +78,11 @@ class EVERoutesApp {
     updateDisplays() {
         const cargoValue = document.getElementById('cargoCapacity').value;
         const profitValue = document.getElementById('minProfit').value;
+        const taxValue = document.getElementById('salesTax').value;
         
         this.updateCargoDisplay(cargoValue);
         this.updateProfitDisplay(profitValue);
+        this.updateTaxDisplay(taxValue);
     }
 
     updateCargoDisplay(value) {
@@ -84,6 +99,11 @@ class EVERoutesApp {
         } else {
             display.textContent = `${parseInt(value).toLocaleString()} ISK`;
         }
+    }
+
+    updateTaxDisplay(value) {
+        const display = document.getElementById('taxDisplay');
+        display.textContent = `${parseFloat(value).toFixed(2)}%`;
     }
 
     formatISK(value) {
@@ -113,6 +133,7 @@ class EVERoutesApp {
         const toStation = formData.get('toStation');
         const cargoCapacity = formData.get('cargoCapacity');
         const minProfit = formData.get('minProfit');
+        const salesTax = formData.get('salesTax');
 
         // Validate
         if (!fromStation) {
@@ -138,7 +159,8 @@ class EVERoutesApp {
             from_station: fromStation,
             to_station: toStation,
             max_cargo: cargoCapacity,
-            min_profit: minProfit
+            min_profit: minProfit,
+            sales_tax: salesTax
         });
 
         const url = `/api/opportunities?${params}`;
