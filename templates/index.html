@@ -88,17 +88,16 @@
 
                         <!-- Sales Tax Rate -->
                         <div class="form-group">
-                            <label for="salesTax">Sales Tax Rate (%):</label>
-                            <div class="input-with-display">
-                                <input type="range" id="salesTax" name="salesTax" 
-                                       min="3.37" max="7.5" value="7.5" step="0.1">
-                                <span class="value-display" id="taxDisplay">7.5%</span>
-                            </div>
-                            <div class="presets">
-                                <button type="button" class="preset-btn" data-tax="7.5">No Skill (7.5%)</button>
-                                <button type="button" class="preset-btn" data-tax="5.0">Accounting III (5.0%)</button>
-                                <button type="button" class="preset-btn" data-tax="3.37">Accounting V (3.37%)</button>
-                            </div>
+                            <label for="salesTax">Sales Tax Rate:</label>
+                            <select id="salesTax" name="salesTax" required>
+                                <option value="8.0">Alpha / No Accounting: 8.00%</option>
+                                <option value="7.5" selected>No Skill: 7.50%</option>
+                                <option value="6.675">Accounting I: 6.68%</option>
+                                <option value="5.94">Accounting II: 5.94%</option>
+                                <option value="5.287">Accounting III: 5.29%</option>
+                                <option value="4.705">Accounting IV: 4.71%</option>
+                                <option value="3.375">Accounting V: 3.38%</option>
+                            </select>
                         </div>
 
                         <!-- Submit Button -->

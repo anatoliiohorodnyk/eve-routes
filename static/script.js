@@ -21,7 +21,6 @@ class EVERoutesApp {
         // Range input updates
         const cargoSlider = document.getElementById('cargoCapacity');
         const profitSlider = document.getElementById('minProfit');
-        const taxSlider = document.getElementById('salesTax');
 
         cargoSlider.addEventListener('input', (e) => {
             this.updateCargoDisplay(e.target.value);
@@ -29,10 +28,6 @@ class EVERoutesApp {
 
         profitSlider.addEventListener('input', (e) => {
             this.updateProfitDisplay(e.target.value);
-        });
-
-        taxSlider.addEventListener('input', (e) => {
-            this.updateTaxDisplay(e.target.value);
         });
 
         // Preset buttons
@@ -49,14 +44,6 @@ class EVERoutesApp {
                 const profit = e.target.dataset.profit;
                 profitSlider.value = profit;
                 this.updateProfitDisplay(profit);
-            });
-        });
-
-        document.querySelectorAll('.preset-btn[data-tax]').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const tax = e.target.dataset.tax;
-                taxSlider.value = tax;
-                this.updateTaxDisplay(tax);
             });
         });
 
