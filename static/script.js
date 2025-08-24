@@ -65,11 +65,9 @@ class EVERoutesApp {
     updateDisplays() {
         const cargoValue = document.getElementById('cargoCapacity').value;
         const profitValue = document.getElementById('minProfit').value;
-        const taxValue = document.getElementById('salesTax').value;
         
         this.updateCargoDisplay(cargoValue);
         this.updateProfitDisplay(profitValue);
-        this.updateTaxDisplay(taxValue);
     }
 
     updateCargoDisplay(value) {
@@ -86,11 +84,6 @@ class EVERoutesApp {
         } else {
             display.textContent = `${parseInt(value).toLocaleString()} ISK`;
         }
-    }
-
-    updateTaxDisplay(value) {
-        const display = document.getElementById('taxDisplay');
-        display.textContent = `${parseFloat(value).toFixed(2)}%`;
     }
 
     formatISK(value) {
